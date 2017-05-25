@@ -20,6 +20,6 @@ object MyExercise {
         }
 
         val as = Array(-1, 2, 3)
-        println(isSorted(as, intComparator))
+        println(isSorted(as, (n1: Int, n2: Int) => n1 <= n2))
     }
 }
