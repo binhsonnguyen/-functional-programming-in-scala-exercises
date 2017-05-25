@@ -81,11 +81,12 @@ def curry[A,B,C](f: (A, B) => C): A => B => C = a => b => f(a, b)
 EXERCISE 2.4
 Implement `uncurry` function
 */
-def uncurry[A,B,C](f: A => B => C): (A, B) => C => (a: A, b: B) => f(a)(b)
+def uncurry[A,B,C](f: A => B => C): (A, B) => C => (a, b) => f(a)(b)
 
 
 /*
 EXERCISE 2.5
 Implement the higher-order function that composes two functions.
 */
-def compose[A,B,C](f: B => C, g: A => B): A => C = (a: A) => f(g(a))
+def compose[A,B,C](f: B => C, g: A => B): A => C = a => f(g(a))
+def andThen[A,B,C](f: B => C, g: A => B): A => C = a => compose(f, g)
