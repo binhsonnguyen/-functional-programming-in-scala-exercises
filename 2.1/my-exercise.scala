@@ -8,6 +8,7 @@ local tail-recursive function.
 
 object MyExercise {
     def fib(n: Int): Int = {
+        @annotation.tailrec
         def go(n: Int, p1: Int, p2: Int): Int = {
             if (n <= 0) p1
             else go(n - 1, p1 + p2, p1)
