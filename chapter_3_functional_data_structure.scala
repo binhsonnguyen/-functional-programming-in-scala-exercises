@@ -31,9 +31,14 @@ case class ListtCons[+A] (head: A, tail: Listt[A]) extends Listt[A]
   *
   */
 object Listt {
+
+  /**
+    * ở đây đã sử dụng symbol `_`, có vẻ như nó được sử dụng để thay thế cho `anything`. Magic của symbol này có
+    * vẻ đến từ mechanic pattern matching, hay sâu xa hơn là implicit của Scala.
+    */
   def apply[A](as: A*): Listt[A] = {
     if (as.isEmpty) Nill
-    else ListtCons(as.head, apply(as.tail: _*)) // `:_*` means treat as.tail as `apply`'s argument sequence
+    else ListtCons(as.head, apply(as.tail: _*))
   }
 
   def sum(ints: Listt[Int]): Int = ints match {
