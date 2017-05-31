@@ -46,6 +46,11 @@ object Listt {
     case ListtCons(0.0, _) => 0.0
     case ListtCons(h, t) => h * product(t)
   }
+
+  def fill[A](n: Int, a: A): Listt[A] = {
+    if (n <= 0) Nill
+    else ListtCons(a, fill(n - 1, a))
+  }
 }
 
 object App {
