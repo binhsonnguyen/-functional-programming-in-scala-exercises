@@ -5,16 +5,11 @@ case class ListtCons[+A] (head: A, tail: Listt[A]) extends Listt[A]
 
 
 /**
-  * Even when it can have another name, this object named with same name with `Listt` trait, means it
-  * is a companion object which give folowing purpose:
-  * - declare methods related to the trait which would otherwise be static
-  * - declare `unapply` and `unapllySeq` methods to define custom extractors for pattern matching
-  * - declare `apply` method which typically used as a factory that creates object or particular trait
-  * -
+  * Object này, mặc dù có thể đặt bằng tên khác cho tường minh, nhưng đã được cố ý đặt trùng tên với trait `Listt`.
+  * Scala cung cấp luật chơi này với cả `trait` lẫn `class`. Object được đặt tên như thế gọi là `companion object`.
+  * Nó sẽ cung cấp các method trông giống như là static method của trait/class.
   *
-  * PS: lúc tôi soạn comment trên thì tôi để ý tới một việc là thật ra companion object là một cách
-  * để triển khai những thứ `static like` trong scala, bởi vì thực chất thì scala không có từ khoá
-  * static.
+  * PS: lúc tôi soạn comment trên thì tôi để ý rằng scala không có từ khoá static.
   *
   * Câu hỏi là: "tại sao scala không cung cấp game mechanic `static` ?"
   *
