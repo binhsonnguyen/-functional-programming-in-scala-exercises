@@ -1,7 +1,8 @@
 sealed trait Listt[+A]
 
 case object Nill extends Listt[Nothing]
-case class ListtCons[+A] (head: A, tail: Listt[A]) extends Listt[A]
+
+case class Cons[+A](head: A, tail: Listt[A]) extends Listt[A]
 
 
 /**
@@ -33,33 +34,42 @@ case class ListtCons[+A] (head: A, tail: Listt[A]) extends Listt[A]
 object Listt {
 
   /**
-    * ở đây đã sử dụng symbol `_`, có vẻ như nó được sử dụng để thay thế cho `anything`. Magic của symbol này có
-    * vẻ đến từ mechanic pattern matching, hay sâu xa hơn là implicit của Scala.
+    * ở đây đã sử dụng symbol `_`, có vẻ như nó được sử dụng để thay thế cho `anything`, hay `anything you give me`.
+    * Magic của symbol này có vẻ đến từ mechanic pattern matching, hay sâu xa hơn là implicit của Scala.
     */
   def apply[A](as: A*): Listt[A] = {
     if (as.isEmpty) Nill
-    else ListtCons(as.head, apply(as.tail: _*))
+    else Cons(as.head, apply(as.tail: _*))
   }
 
   def sum(ints: Listt[Int]): Int = ints match {
     case Nill => 0
-    case ListtCons(h: Int, t: Listt[Int]) => h + sum(t) // first time we met partern matching
+    case Cons(h: Int, t: Listt[Int]) => h + sum(t) // first time we met partern matching
   }
 
   def product(ds: Listt[Double]): Double = ds match {
     case Nill => 1.0
-    case ListtCons(0.0, _) => 0.0
-    case ListtCons(h, t) => h * product(t)
+    case Cons(0.0, _) => 0.0
+    case Cons(h, t) => h * product(t)
   }
 
   def fill[A](n: Int, a: A): Listt[A] = {
     if (n <= 0) Nill
-    else ListtCons(a, fill(n - 1, a))
+    else Cons(a, fill(n - 1, a))
   }
 }
 
-object App {
-  def main(args: Array[String]): Unit = {
-    println(Listt.sum(Listt(2, 3, 4, 5)))
-  }
+/**
+  * EXERCISE 3.1
+  * What will be the result of the following match expression?
+  *
+  * ANSWER
+  * 3
+  */
+val x = Listt(1, 2, 3, 4, 5) match {
+  case Cons(x, Cons(2, Cons(4, _))) => x
+  case Nill => 42
+  case Cons(x, Cons(y, Cons(3, Cons(4, _)))) => x + y
+  case Cons(h, t) => h + Listt.sum(t)
+  case _ => 101
 }
