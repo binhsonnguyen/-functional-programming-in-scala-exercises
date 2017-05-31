@@ -20,7 +20,7 @@ case class Cons[+A](head: A, tail: Listt[A]) extends Listt[A]
   * Tuy nhiên, sau khi lý giải như thế thì tôi không thể thoát ra khỏi suy nghĩ: companion object
   * thực sự là một global state. Qua tìm hiều thì điều này thậm chí đã được xác nhận bởi `Gilad Bracha ` -
   * cha đẻ của Java Generics.
-  * (https://stackoverflow.com/questions/7302206/why-doesnt-scala-have-static-members-inside-a-class)
+  * (https://gbracha.blogspot.com/2008/02/cutting-out-static.html)
   *
   * Vậy thì câu hỏi tiếp theo là: tại sao một ngôn ngữ muốn hướng hàm như scala lại cung cấp một thứ `static like` ?.
   *
@@ -62,6 +62,23 @@ object Listt {
     if (n <= 0) Nill
     else Cons(a, fill(n - 1, a))
   }
+
+  /**
+    * Có một dòng ở đây cần được noted lại:
+    * <quote>We say that functional data structures are persistent, meaning that existing references are never changed
+    * by operations on  the data structure.</quote>
+    */
+
+  /**
+    * EXERCISE 3.2
+    * Implement the function tail for removing the first element of a List. Note that the function takes constant
+    * time. What are different choices you could make in your implementation if the List is Nil? We’ll return
+    * to this question in the next chapter.
+    */
+  def tail[A](l: Listt[A]): Listt[A] = {
+    case Nill => Nill
+    case Cons(_, t) => t
+  }
 }
 
 /**
@@ -78,3 +95,4 @@ val x = Listt(1, 2, 3, 4, 5) match {
   case Cons(h, t) => h + Listt.sum(t)
   case _ => 101
 }
+
