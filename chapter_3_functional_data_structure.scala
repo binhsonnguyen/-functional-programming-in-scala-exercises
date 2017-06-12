@@ -75,8 +75,8 @@ object Listt {
     * time. What are different choices you could make in your implementation if the List is Nil? We’ll return
     * to this question in the next chapter.
     */
-  def tail[A](l: Listt[A]): Listt[A] = {
-    case Nill => Nill
+  def tail[A](l: Listt[A]): Listt[A] = l match {
+    case Nill => sys.error("tail of empty list")
     case Cons(_, t) => t
   }
 
@@ -85,8 +85,8 @@ object Listt {
     * Using the same idea, implement the function setHead for replacing the first element of a List with a
     * different value.
     */
-  def setHead[A](l: Listt[A], h: A): Listt[A] = {
-    case Nill => Nill
+  def setHead[A](l: Listt[A], h: A): Listt[A] = l match {
+    case Nill => sys.error("set head on empty list")
     case Cons(_, t) => Cons(h, t)
   }
 
@@ -98,7 +98,33 @@ object Listt {
     */
   def drop[A](l: Listt[A], n: Int): Listt[A] = {
     if (n <= 0) l
-    else drop(tail(l), n - 1)
+    else l match {
+      case Nill => Nill
+      case Cons(_, t) => drop(t, n - 1)
+    }
+  }
+
+  /**
+    * EXERCISE 3.5
+    * Implement dropWhile, which removes elements from the List prefix as long as they match a predicate.
+    *
+    * Note:
+    * This is first time we used pattern matching's guard (`case _ if _`), it better than place `if` statement
+    * after the `=>` because the pattern wont match if the guard not `true`
+    * As long as first time using case others (`case _`)
+    */
+  def dropWhile[A](l: Listt[A], f: A => Boolean): Listt[A] = l match {
+    case Cons(h, t) if f(h) => dropWhile(t, f)
+    case _ => l
+  }
+
+  /**
+    * A more surprising example of data sharing is this function that adds all the elements of one list to
+    * the end of another:
+    */
+  def append[A](a1: Listt[A], a2: Listt[A]): Listt[A] = a1 match {
+    case Nill => a2
+    case Cons(h, t) => Cons(h, append(t, a2))
   }
 }
 
