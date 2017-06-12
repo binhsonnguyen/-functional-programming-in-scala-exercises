@@ -82,12 +82,23 @@ object Listt {
 
   /**
     * EXERCISE 3.3
-    * Using the same idea, implement the function setHead for replacing the first element of a List with a 
+    * Using the same idea, implement the function setHead for replacing the first element of a List with a
     * different value.
     */
   def setHead[A](l: Listt[A], h: A): Listt[A] = {
     case Nill => Nill
     case Cons(_, t) => Cons(h, t)
+  }
+
+  /**
+    * EXERCISE 3.4
+    * Generalize tail to the function drop, which removes the first `n` elements from a list. Note that this
+    * function takes time proportional only to the number of elements being dropped—we don’t need to make
+    * a copy of the entire List.
+    */
+  def drop[A](l: Listt[A], n: Int): Listt[A] = {
+    if (n <= 0) l
+    else drop(tail(l), n - 1)
   }
 }
 
