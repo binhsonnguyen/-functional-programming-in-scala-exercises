@@ -79,6 +79,16 @@ object Listt {
     case Nill => Nill
     case Cons(_, t) => t
   }
+
+  /**
+    * EXERCISE 3.3
+    * Using the same idea, implement the function setHead for replacing the first element of a List with a 
+    * different value.
+    */
+  def setHead[A](l: Listt[A], h: A): Listt[A] = {
+    case Nill => Nill
+    case Cons(_, t) => Cons(h, t)
+  }
 }
 
 /**
