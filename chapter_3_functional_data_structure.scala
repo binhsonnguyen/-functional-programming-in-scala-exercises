@@ -126,6 +126,33 @@ object Listt {
     case Nill => a2
     case Cons(h, t) => Cons(h, append(t, a2))
   }
+
+  /**
+    * EXERCISE 3.6
+    * Not everything works out so nicely. Implement a function, init, that returns a List consisting of all
+    * but the last element of a List. So, given List(1,2,3,4), init will return List(1,2,3). Why can’t this
+    * function be implemented in constant time like tail?
+    */
+  def init[A](l: Listt[A]): Listt[A] = l match {
+    case Nill => sys.error("init of an empty list")
+    case Cons(_, Nill) => Nill
+    case Cons(h, t) => Cons(h, init(t))
+  }
+
+  /**
+    * init2 using a list buffer
+    */
+  def init2[A](l: Listt[A]): Listt[A] =  {
+    import scala.collection.mutable.ListBuffer
+    val buf = new ListBuffer[A]
+    @annotation.tailrec
+    def go(c: Listt[A]): Listt[A] = c match {
+      case Nill => sys.error("init of an empty list")
+      case Cons(_, Nill) => Listt(buf.toList: _*)
+      case Cons(h, t) => buf += h; go(t)
+    }
+    go(l)
+  }
 }
 
 /**
@@ -136,9 +163,9 @@ object Listt {
   * 3
   */
 val x = Listt(1, 2, 3, 4, 5) match {
-  case Cons(x, Cons(2, Cons(4, _))) => x
+  case Cons(h, Cons(2, Cons(4, _))) => h
   case Nill => 42
-  case Cons(x, Cons(y, Cons(3, Cons(4, _)))) => x + y
+  case Cons(h, Cons(y, Cons(3, Cons(4, _)))) => h + y
   case Cons(h, t) => h + Listt.sum(t)
   case _ => 101
 }
