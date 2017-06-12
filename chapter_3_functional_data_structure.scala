@@ -119,6 +119,32 @@ object Listt {
   }
 
   /**
+    * Cải tiến khả năng tự luận kiểu cho hàm cấp cao.
+    *
+    * Hàm `dropWhile` trên kia thường được truyền vào một hàm vô danh làm tham số thứ hai. Ví dụ
+    * ```
+    * val xs: Listt[Int] = Listt(1, 2, 3, 4)
+    * val ex = dropWhilte(xs, (x: Int) => x < 4)
+    * ```
+    * Thật bất hạnh khi chúng ta phải định kiểu cho tham số `x` trong khi nó đáng lẽ có thể suy ra được
+    * khi mà đầu vào của chúng ta là list số nguyên. Chúng ta có thể lợi dụng khả năng ngầm định kiểu của Scala
+    * nếu tách các tham số của hàm `dropWhile` thành 2 nhóm như triển khai bên dưới đây. Phép này được gọi
+    * bằng khái niệm "curry hoá".
+    *
+    * Chỉ khi group như vậy, thông tin về kiểu mới được truyền từ group đầu tiên lần lượt tới các group tiếp
+    * theo, tạo điều kiện để tự luận kiểu, nhờ đó  `dropWhile2`, không cần chỉ định kiểu cho `x` nữa:
+    * `val ex = dropWhile2(xs)(x => x < 4)`
+    *
+    * Thật ra thì khả năng tự luận kiểu của Scala compiler có hạn chế nên mới phải curry hoá. Chứ các ngôn ngữ
+    * như Haskell hay OCaml có khả năng tự luận hoàn chỉnh hơn nhiều, nên rất ít khi phải định kiểu.
+    */
+  def dropWhile2[A](as: Listt[A])(f: A => Boolean): Listt[A] = as match {
+    case Cons(h, t) if f(h) => dropWhile2(t)(f)
+    case _ => as
+  }
+
+
+  /**
     * A more surprising example of data sharing is this function that adds all the elements of one list to
     * the end of another:
     */
@@ -142,7 +168,7 @@ object Listt {
   /**
     * init2 using a list buffer
     */
-  def init2[A](l: Listt[A]): Listt[A] =  {
+  def init2[A](l: Listt[A]): Listt[A] = {
     import scala.collection.mutable.ListBuffer
     val buf = new ListBuffer[A]
     @annotation.tailrec
