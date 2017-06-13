@@ -179,6 +179,38 @@ object Listt {
     }
     go(l)
   }
+
+  /**
+    * Đặt vấn đề ở hàm `sum` cũng như `product`, trong ngữ cảnh của `Generic` - có nghĩa là không quan tâm
+    * tới sự khác nhau của kiểu trả về, thì chúng chỉ khác nhau ở "giá trị trả về khi đưa vào list rỗng" và
+    * "phép toán hợp nhất để đưa đến kết quả". Mỗi khi ta gặp mã lặp theo kiểu như thế này, ta có thể khái
+    * quát hoá chúng bằng cách đưa những biểu thức phụ (giá trị trả về khi list rỗng + phép toán hợp, trong
+    * trường hợp vừa rồi) thành tham số của hàm.
+    *
+    * Giờ ta sẽ phân tích.
+    *
+    * Với trường hợp "giá trị trả về khi list rỗng", nó rất đơn giản là sẽ thành một tham số thứ hai bên cạnh
+    * tham số list đầu vào.
+    *
+    * Tuy nhiên với "phép toán hợp" thì khác. Nó phụ thuộc vào những biến nội hạt khác của hàm. Do đó không
+    * có cách nào khác nó phải thành một hàm nhận những biến nội hạt kia vào như những đối số.
+    *
+    * Kết quả ta có quá trình khai triển interface hàm như sau:
+    * ```
+    * def foldRight[A](as: Listt[A])
+    * def foldRight[A, B](l: Listt[A]): B
+    * def foldRight[A, B](l: Listt[A], z: B): B
+    * def foldRight[A, B](l: Listt[A], z: B, f: (A, B) => B): B
+    * def foldRight[A, B](l: Listt[A], z: B)(f: (A, B) => B): B
+    * ```
+    */
+  def foldRight[A, B](l: Listt[A], z: B)(f: (A, B) => B): B = l match {
+    case Nill => z
+    case Cons(h, t) => f(h, foldRight(t, z)(f))
+  }
+
+  def sum2(l: Listt[Int]): Int = foldRight(l, 0)(_ + _)
+  def product2(l: Listt[Double]): Double = foldRight(l, 1.0)(_ * _)
 }
 
 /**
