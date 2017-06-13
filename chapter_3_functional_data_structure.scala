@@ -245,6 +245,14 @@ object Listt {
     * We get back the input list. Even more, if we replace `Nill` with another list, we was implement `concat` function
     */
 
+
+  /**
+    * EXERCISE 3.9
+    *
+    * Compute the length of a list using foldRight.
+    */
+  def length[A](l: Listt[A]): Int = foldRight(l, 0)((_, length) => length + 1)
+
 }
 
 /**
