@@ -228,6 +228,23 @@ object Listt {
     *
     */
 
+  /**
+    * EXERCISE 3.8
+    *
+    * See what happens when you pass Nil and Cons themselves to foldRight, like this:
+    *
+    * ```
+    * foldRight(Listt(1,2,3), Nill:Listt[Int])(Cons(_,_))
+    * ```
+    *
+    * What do you think this says about the relationship between foldRight and
+    * the data constructors of List?
+    *
+    * ANSWER
+    *
+    * We get back the input list. Even more, if we replace `Nill` with another list, we was implement `concat` function
+    */
+
 }
 
 /**
