@@ -208,9 +208,26 @@ object Listt {
     case Nill => z
     case Cons(h, t) => f(h, foldRight(t, z)(f))
   }
-
   def sum2(l: Listt[Int]): Int = foldRight(l, 0)(_ + _)
   def product2(l: Listt[Double]): Double = foldRight(l, 1.0)(_ * _)
+
+  /**
+    * EXERCISE 3.7
+    *
+    * Can `product2`, implemented using foldRight, immediately halt the recursion and return 0.0 if it encounters a
+    * 0.0? Why or why not? Consider how any short-circuiting might work if you call foldRight with a large list.
+    * This is a deeper question that we’ll return to in chapter 5.
+    *
+    * Hàm `product2` được implement bởi foldRight có thể nào tắt ngay lập tức và trả về 0.0 ngay khi gặp bất
+    * kỳ gía trị 0.0 nào trong list không? Vì sao? Đặt vấn đề: làm thế nào để "đoản mạch" trong trường hợp ta
+    * dùng foldRight trên một list quá lớn? Câu hỏi này sẽ được trở lại trong chương 5.
+    *
+    * ANSWER
+    *
+    * Chịu. Vì `f` sẽ duyệt hết list. Ta cần thêm syntax hay mechanic khác để có thể thực hiện được "đoản mạch"
+    *
+    */
+
 }
 
 /**
