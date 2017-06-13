@@ -253,6 +253,19 @@ object Listt {
     */
   def length[A](l: Listt[A]): Int = foldRight(l, 0)((_, length) => length + 1)
 
+  /**
+    * EXERCISE 3.10
+    *
+    * Our implementation of foldRight is not tail-recursive and will result in a StackOver - flowError for large
+    * lists (we say it’s not _stack-safe_). Convince yourself that this is the case, and then write another general
+    * list-recursion function, `foldLeft`, that is tail-recursive, using the techniques we discussed in the previous
+    * chapter. Here is its signature
+    */
+  @annotation.tailrec
+  def foldLeft[A,B](l: Listt[A], z: B)(f: (A, B) => B): B = l match {
+    case Nill => z
+    case Cons(h, t) => foldLeft(t, f(h, z))(f)
+  }
 }
 
 /**
