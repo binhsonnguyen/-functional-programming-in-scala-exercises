@@ -262,10 +262,21 @@ object Listt {
     * chapter. Here is its signature
     */
   @annotation.tailrec
-  def foldLeft[A,B](l: Listt[A], z: B)(f: (A, B) => B): B = l match {
+  def foldLeft[A,B](l: Listt[A], z: B)(f: (B, A) => B): B = l match {
     case Nill => z
-    case Cons(h, t) => foldLeft(t, f(h, z))(f)
+    case Cons(h, t) => foldLeft(t, f(z, h))(f)
   }
+
+  /**
+    * EXERCISE 3.11
+    *
+    * Write sum, product, and a function to compute the length of a list using foldLeft.
+    */
+  def sum3(l: Listt[Int]): Int = foldLeft(l, 0)(_ + _)
+  def product3(l: Listt[Double]): Double = foldLeft(l, 0.0)(_ * _)
+  def length2(l: Listt[Int]): Int = foldLeft(l, 0)((x, _) => x + 1)
+
+
 }
 
 /**
