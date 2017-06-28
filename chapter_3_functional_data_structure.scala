@@ -285,6 +285,24 @@ object Listt {
     */
   def reverse[A](l: Listt[A]): Listt[A] = foldLeft(l, Nill: Listt[A])((as, x) => Cons(x, as))
 
+  /**
+    * EXERCISE 3.13
+    *
+    * Hard: Can you write foldLeft in terms of foldRight? How about the other way around? Implementing foldRight
+    * via foldLeft is useful because it lets us implement foldRight tail-recursively, which means it works even
+    * for large lists without overflow- ing the stack.
+    */
+  def foldRightViaFoldLeft[A, B](l: Listt[A], z: B)(f: (A, B) => B): B = foldLeft(reverse(l), z)((a, b) => f(b, a))
+
+  /**
+    * EXERCISE 3.14
+    *
+    * Implement append in terms of either `foldLeft` or `foldRight`.
+    */
+  def appendViaFoldRight[A](l: Listt[A], r: Listt[A]): Listt[A] = {
+    foldRightViaFoldLeft(l, r)(Cons(_, _))
+  }
+
 }
 
 /**
