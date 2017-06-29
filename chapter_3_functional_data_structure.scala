@@ -292,7 +292,7 @@ object Listt {
     * via foldLeft is useful because it lets us implement foldRight tail-recursively, which means it works even
     * for large lists without overflow- ing the stack.
     */
-  def foldRightViaFoldLeft[A, B](l: Listt[A], z: B)(f: (A, B) => B): B = foldLeft(reverse(l), z)((a, b) => f(b, a))
+  def foldRightViaFoldLeft[A, Z](l: Listt[A], z: Z)(f: (A, Z) => Z): Z = foldLeft(reverse(l), z)((z, a) => f(a, z))
 
   /**
     * EXERCISE 3.14
@@ -301,6 +301,21 @@ object Listt {
     */
   def appendViaFoldRight[A](l: Listt[A], r: Listt[A]): Listt[A] = {
     foldRightViaFoldLeft(l, r)(Cons(_, _))
+  }
+
+  /**
+    * EXERCISE 3.15
+    *
+    * Hard: Write a function that concatenates a list of lists into a single list. Its runtime should be linear
+    * in the total length of all lists. Try to use functions we have already defined.
+    */
+  def concat[A](l: Listt[Listt[A]]): Listt[A] = l match {
+    case Nill => Nill
+    case Cons(h, t) => append(h, concat(t))
+  }
+
+  def concat2[A](l: Listt[Listt[A]]): Listt[A] = {
+    foldRightViaFoldLeft(l, Nill: Listt[A])(append)
   }
 
 }
