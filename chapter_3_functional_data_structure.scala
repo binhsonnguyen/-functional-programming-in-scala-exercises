@@ -321,6 +321,57 @@ object Listt {
     */
   def add1(l: Listt[Int]): Listt[Int] = foldRight(l, Nill: Listt[Int])((i, t) => Cons(i + 1, t))
 
+  /**
+    * EXERCISE 3.17
+    *
+    * Write a function that turns each value in a List[Double] into a String. You can use the expression d.toString
+    * to convert some d: Double to a String.
+    */
+  def mapToString(l: Listt[Double]): Listt[String] = foldRight(l, Nill: Listt[String])((d, t) => Cons(d.toString, t))
+
+  /**
+    * EXERCISE 3.18
+    *
+    * Write a function map that generalizes modifying each element in a list while maintain- ing the structure of
+    * the list. Here is its signature:12
+    */
+  def map[A, B](l: Listt[A])(f: A => B): Listt[B] = foldRight(l, Nill: Listt[B])((a, t) => Cons(f(a), t))
+  def map_2[A, B](l: Listt[A])(f: A => B): Listt[B] = foldRightViaFoldLeft(l, Nill: Listt[B])((a, t) => Cons(f(a), t))
+  def map_3[A, B](l: Listt[A])(f: A=> B): Listt[B] = Nill
+
+  /**
+    * EXERCISE 3.20
+    *
+    * Write a function flatMap that works like map except that the function given will return a list instead of a
+    * single result, and that list should be inserted into the final resulting list.
+    *
+    * For instance, flatMap(List(1,2,3))(i => List(i,i)) should result in List(1,1,2,2,3,3).
+    */
+  def flatMap[A, B](l: Listt[A])(f: A => Listt[B]): Listt[B] = concat(map(l)(f))
+
+  /**
+    * EXERCISE 3.21
+    *
+    * Use `flatMap` to implement `filter`
+    */
+  def filter[A](l: Listt[A])(f: A => Boolean): Listt[A] = flatMap(l)(a => if (f(a)) Listt(a) else Nill)
+
+  /**
+    * other implementation of `filter`
+    */
+  def filter_2[A](l: Listt[A])(f: A => Boolean): Listt[A] = foldRight(l, Nill: Listt[A])((a, b) => if (f(a)) Cons(a, b) else b)
+  def filter_3[A](l: Listt[A])(f: A => Boolean): Listt[A] = {
+    import scala.collection.mutable.ListBuffer
+    val buf = new ListBuffer[A]
+    @annotation.tailrec
+    def go(l: Listt[A]): Unit = l match {
+      case Nill => Unit
+      case Cons(h, t) => if (f(h)) buf += h; go(t)
+    }
+    go(l)
+    Listt(buf.toList: _*)
+  }
+
 }
 
 /**
