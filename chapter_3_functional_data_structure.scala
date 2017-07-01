@@ -309,14 +309,17 @@ object Listt {
     * Hard: Write a function that concatenates a list of lists into a single list. Its runtime should be linear
     * in the total length of all lists. Try to use functions we have already defined.
     */
-  def concat[A](l: Listt[Listt[A]]): Listt[A] = l match {
-    case Nill => Nill
-    case Cons(h, t) => append(h, concat(t))
-  }
-
-  def concat2[A](l: Listt[Listt[A]]): Listt[A] = {
+  def concat[A](l: Listt[Listt[A]]): Listt[A] = {
     foldRightViaFoldLeft(l, Nill: Listt[A])(append)
   }
+
+  /**
+    * EXERCISE 3.16
+    *
+    * Write a function that transforms a list of integers by adding 1 to each element. (Reminder: this should be
+    * a pure function that returns a new List!)
+    */
+  def add1(l: Listt[Int]): Listt[Int] = foldRight(l, Nill: Listt[Int])((i, t) => Cons(i + 1, t))
 
 }
 
