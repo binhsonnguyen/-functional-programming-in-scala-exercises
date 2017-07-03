@@ -397,6 +397,62 @@ object Listt {
     case (Cons(h1, t1), Cons(h2, t2)) => Cons(f(h1, h2), zipWith(t1, t2)(f))
   }
 
+  /**
+    * some function take from scala's List library
+    */
+  def take[A](l: Listt[A], n: Int): Listt[A] = {
+    if (n <= 0) Nill
+    else l match {
+      case Nill => Nill
+      case Cons(h, t) => Cons(h, take(t, n - 1))
+    }
+  }
+
+  def takeViaListBuf[A](l: Listt[A], n: Int): Listt[A] = {
+    if (n <= 0) Nill
+
+    import scala.collection.mutable.ListBuffer
+    val buf = new ListBuffer[A]
+    @annotation.tailrec
+    def go(l: Listt[A], n: Int): Unit = l match {
+      case Nill => Nill
+      case Cons(h, t) => buf += h; go(t, n - 1)
+    }
+    go(l, n)
+
+    Listt(buf.toList: _*)
+  }
+
+  def takeWhile[A](l: Listt[A])(f: A => Boolean): Listt[A] = l match {
+    case Nill => Nill
+    case Cons(h, t) => if (f(h)) Cons(h, takeWhile(t)(f)) else Nill
+  }
+
+  def takeWhileViaListBuf[A](l: Listt[A])(f: A => Boolean): Listt[A] = {
+    import scala.collection.mutable.ListBuffer
+    val buf = new ListBuffer[A]
+    @annotation.tailrec
+    def go(l: Listt[A])(f: A => Boolean): Unit = l match {
+      case Nill => ()
+      case Cons(h, t) => if (f(h)) buf += h; go(t)(f)
+    }
+    go(l)(f)
+
+    Listt(buf.toList: _*)
+  }
+
+  @annotation.tailrec
+  def forall[A](l: Listt[A])(f: A => Boolean): Boolean = l match {
+    case Nill => f(Nill)
+    case Cons(h, t) => f(h) && forall(t)(f)
+  }
+
+  @annotation.tailrec
+  def exists[A](l: Listt[A])(f: A => Boolean): Boolean = l match {
+    case Nill => f(Nill)
+    case Cons(h, t) => if (f(h)) true else exists(t)(f)
+  }
+
 }
 
 /**
