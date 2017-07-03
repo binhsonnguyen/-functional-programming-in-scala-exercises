@@ -359,7 +359,8 @@ object Listt {
   /**
     * other implementation of `filter`
     */
-  def filter_2[A](l: Listt[A])(f: A => Boolean): Listt[A] = foldRight(l, Nill: Listt[A])((a, b) => if (f(a)) Cons(a, b) else b)
+  def filter_2[A](l: Listt[A])(f: A => Boolean): Listt[A] =
+    foldRight(l, Nill: Listt[A])((a, b) => if (f(a)) Cons(a, b) else b)
   def filter_3[A](l: Listt[A])(f: A => Boolean): Listt[A] = {
     import scala.collection.mutable.ListBuffer
     val buf = new ListBuffer[A]
@@ -370,6 +371,30 @@ object Listt {
     }
     go(l)
     Listt(buf.toList: _*)
+  }
+
+  /**
+    * EXERCISE 3.22
+    *
+    * Write a function that accepts two lists and constructs a new list by adding corresponding elements. For
+    * example, List(1,2,3) and List(4,5,6) become List(5,7,9).
+    */
+  def addPair(l1: Listt[Int], l2: Listt[Int]): Listt[Int] = (l1, l2) match {
+    case (Nill, _) => Nill
+    case (_, Nill) => Nill
+    case (Cons(h1, t1), Cons(h2, t2)) => Cons(h1 + h2, addPair(t1, t2))
+  }
+
+  /**
+    * EXERCISE 3.23
+    *
+    * Generalize the function you just wrote so that it’s not specific to integers or addition. Name your
+    * generalized function zipWith.
+    */
+  def zipWith[A, B](l1: Listt[A], l2: Listt[A])(f: (A, A) => B): Listt[B] = (l1, l2) match {
+    case (Nill, _) => Nill
+    case (_, Nill) => Nill
+    case (Cons(h1, t1), Cons(h2, t2)) => Cons(f(h1, h2), zipWith(t1, t2)(f))
   }
 
 }
