@@ -453,6 +453,41 @@ object Listt {
     case Cons(h, t) => if (f(h)) true else exists(t)(f)
   }
 
+  /**
+    * EXERCISE 3.24
+    *
+    * Hard: As an example, implement `hasSubsequence` for checking whether a List contains another List as a
+    * subsequence. For instance, List(1,2,3,4) would have List(1,2), List(2,3), and List(4) as subsequences,
+    * among others. You may have some difficulty finding a concise purely functional implementation that is
+    * also efficient. That’s okay. Implement the function however comes most naturally. We’ll return to this
+    * implementation in chapter 5 and hopefully improve on it. Note: Any two values x and y can be compared for
+    * equality in Scala using the expression x == y.
+    */
+  def startWith[A](l: Listt[A], s: Listt[A]): Boolean = (l, s) match {
+    case (_, Nill) => l == Nill
+    case (Cons(h1, t1), Cons(h2, t2)) => h1 == h2 & startWith(t1, t2)
+    case _ => false
+  }
+
+  def startWithViaBuf[A](l: Listt[A], s: Listt[A]): Boolean = {
+    var buf = true
+    @annotation.tailrec
+    def go(l: Listt[A], s: Listt[A]): Unit = (l, s) match {
+      case (_, Nill) => buf = l == Nill
+      case (Cons(h1, t1), Cons(h2, t2)) => buf &= h1 == h2; go(t1, t2)
+      case _ => buf = false
+    }
+    go(l, s)
+    buf
+  }
+
+  @annotation.tailrec
+  def hasSubsequence[A](l: Listt[A], s: Listt[A]): Boolean = s match {
+    case Nill => l == Nill
+    case _ if startWith(l, s) => true
+    case Cons(h, t) => hasSubsequence(t, s)
+  }
+
 }
 
 /**
