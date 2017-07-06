@@ -1,12 +1,12 @@
-sealed trait Listt[+A]
+sealed trait List[+A]
 
-case object Nill extends Listt[Nothing]
+case object Nil extends List[Nothing]
 
-case class Cons[+A](head: A, tail: Listt[A]) extends Listt[A]
+case class Cons[+A](head: A, tail: List[A]) extends List[A]
 
 
 /**
-  * Object này, mặc dù có thể đặt bằng tên khác cho tường minh, nhưng đã được cố ý đặt trùng tên với trait `Listt`.
+  * Object này, mặc dù có thể đặt bằng tên khác cho tường minh, nhưng đã được cố ý đặt trùng tên với trait `List`.
   * Scala cung cấp luật chơi này với cả `trait` lẫn `class`. Object được đặt tên như thế gọi là `companion object`.
   * Nó sẽ cung cấp các method trông giống như là static method của trait/class.
   *
@@ -31,7 +31,7 @@ case class Cons[+A](head: A, tail: Listt[A]) extends Listt[A]
   * Tổng kết: tôi đang học pure functional programing by Scala, nhưng tính pure ở đây rất dễ bị vi phạm, hãy cẩn thận.
   *
   */
-object Listt {
+object List {
 
   /**
     * ở đây đã sử dụng symbol `_`, có vẻ như nó được sử dụng để thay thế cho `anything`, hay `anything you give me`.
@@ -42,24 +42,24 @@ object Listt {
     * trước khi chạy vào thân hàm. Và thực tế thì chúng thật sự được gom vào một `Seq` object. Trong trường hợp này
     * là `Seq[A]`
     */
-  def apply[A](as: A*): Listt[A] = {
-    if (as.isEmpty) Nill
+  def apply[A](as: A*): List[A] = {
+    if (as.isEmpty) Nil
     else Cons(as.head, apply(as.tail: _*))
   }
 
-  def sum(ints: Listt[Int]): Int = ints match {
-    case Nill => 0
-    case Cons(h: Int, t: Listt[Int]) => h + sum(t) // first time we met partern matching
+  def sum(ints: List[Int]): Int = ints match {
+    case Nil => 0
+    case Cons(h: Int, t: List[Int]) => h + sum(t) // first time we met partern matching
   }
 
-  def product(ds: Listt[Double]): Double = ds match {
-    case Nill => 1.0
+  def product(ds: List[Double]): Double = ds match {
+    case Nil => 1.0
     case Cons(0.0, _) => 0.0
     case Cons(h, t) => h * product(t)
   }
 
-  def fill[A](n: Int, a: A): Listt[A] = {
-    if (n <= 0) Nill
+  def fill[A](n: Int, a: A): List[A] = {
+    if (n <= 0) Nil
     else Cons(a, fill(n - 1, a))
   }
 
@@ -75,8 +75,8 @@ object Listt {
     * time. What are different choices you could make in your implementation if the List is Nil? We’ll return
     * to this question in the next chapter.
     */
-  def tail[A](l: Listt[A]): Listt[A] = l match {
-    case Nill => sys.error("tail of empty list")
+  def tail[A](l: List[A]): List[A] = l match {
+    case Nil => sys.error("tail of empty list")
     case Cons(_, t) => t
   }
 
@@ -85,8 +85,8 @@ object Listt {
     * Using the same idea, implement the function setHead for replacing the first element of a List with a
     * different value.
     */
-  def setHead[A](l: Listt[A], h: A): Listt[A] = l match {
-    case Nill => sys.error("set head on empty list")
+  def setHead[A](l: List[A], h: A): List[A] = l match {
+    case Nil => sys.error("set head on empty list")
     case Cons(_, t) => Cons(h, t)
   }
 
@@ -96,10 +96,10 @@ object Listt {
     * function takes time proportional only to the number of elements being dropped—we don’t need to make
     * a copy of the entire List.
     */
-  def drop[A](l: Listt[A], n: Int): Listt[A] = {
+  def drop[A](l: List[A], n: Int): List[A] = {
     if (n <= 0) l
     else l match {
-      case Nill => Nill
+      case Nil => Nil
       case Cons(_, t) => drop(t, n - 1)
     }
   }
@@ -113,7 +113,7 @@ object Listt {
     * after the `=>` because the pattern wont match if the guard not `true`
     * As long as first time using case others (`case _`)
     */
-  def dropWhile[A](l: Listt[A], f: A => Boolean): Listt[A] = l match {
+  def dropWhile[A](l: List[A], f: A => Boolean): List[A] = l match {
     case Cons(h, t) if f(h) => dropWhile(t, f)
     case _ => l
   }
@@ -123,7 +123,7 @@ object Listt {
     *
     * Hàm `dropWhile` trên kia thường được truyền vào một hàm vô danh làm tham số thứ hai. Ví dụ
     * ```
-    * val xs: Listt[Int] = Listt(1, 2, 3, 4)
+    * val xs: List[Int] = List(1, 2, 3, 4)
     * val ex = dropWhilte(xs, (x: Int) => x < 4)
     * ```
     * Thật bất hạnh khi chúng ta phải định kiểu cho tham số `x` trong khi nó đáng lẽ có thể suy ra được
@@ -138,7 +138,7 @@ object Listt {
     * Thật ra thì khả năng tự luận kiểu của Scala compiler có hạn chế nên mới phải curry hoá. Chứ các ngôn ngữ
     * như Haskell hay OCaml có khả năng tự luận hoàn chỉnh hơn nhiều, nên rất ít khi phải định kiểu.
     */
-  def dropWhile2[A](as: Listt[A])(f: A => Boolean): Listt[A] = as match {
+  def dropWhile2[A](as: List[A])(f: A => Boolean): List[A] = as match {
     case Cons(h, t) if f(h) => dropWhile2(t)(f)
     case _ => as
   }
@@ -148,8 +148,8 @@ object Listt {
     * A more surprising example of data sharing is this function that adds all the elements of one list to
     * the end of another:
     */
-  def append[A](a1: Listt[A], a2: Listt[A]): Listt[A] = a1 match {
-    case Nill => a2
+  def append[A](a1: List[A], a2: List[A]): List[A] = a1 match {
+    case Nil => a2
     case Cons(h, t) => Cons(h, append(t, a2))
   }
 
@@ -159,24 +159,26 @@ object Listt {
     * but the last element of a List. So, given List(1,2,3,4), init will return List(1,2,3). Why can’t this
     * function be implemented in constant time like tail?
     */
-  def init[A](l: Listt[A]): Listt[A] = l match {
-    case Nill => sys.error("init of an empty list")
-    case Cons(_, Nill) => Nill
+  def init[A](l: List[A]): List[A] = l match {
+    case Nil => sys.error("init of an empty list")
+    case Cons(_, Nil) => Nil
     case Cons(h, t) => Cons(h, init(t))
   }
 
   /**
     * init2 using a list buffer
     */
-  def init2[A](l: Listt[A]): Listt[A] = {
+  def init2[A](l: List[A]): List[A] = {
     import scala.collection.mutable.ListBuffer
     val buf = new ListBuffer[A]
+
     @annotation.tailrec
-    def go(c: Listt[A]): Listt[A] = c match {
-      case Nill => sys.error("init of an empty list")
-      case Cons(_, Nill) => Listt(buf.toList: _*)
+    def go(c: List[A]): List[A] = c match {
+      case Nil => sys.error("init of an empty list")
+      case Cons(_, Nil) => List(buf.toList: _*)
       case Cons(h, t) => buf += h; go(t)
     }
+
     go(l)
   }
 
@@ -197,19 +199,21 @@ object Listt {
     *
     * Kết quả ta có quá trình khai triển interface hàm như sau:
     * ```
-    * def foldRight[A](as: Listt[A])
-    * def foldRight[A, B](l: Listt[A]): B
-    * def foldRight[A, B](l: Listt[A], z: B): B
-    * def foldRight[A, B](l: Listt[A], z: B, f: (A, B) => B): B
-    * def foldRight[A, B](l: Listt[A], z: B)(f: (A, B) => B): B
+    * def foldRight[A](as: List[A])
+    * def foldRight[A, B](l: List[A]): B
+    * def foldRight[A, B](l: List[A], z: B): B
+    * def foldRight[A, B](l: List[A], z: B, f: (A, B) => B): B
+    * def foldRight[A, B](l: List[A], z: B)(f: (A, B) => B): B
     * ```
     */
-  def foldRight[A, B](l: Listt[A], z: B)(f: (A, B) => B): B = l match {
-    case Nill => z
+  def foldRight[A, B](l: List[A], z: B)(f: (A, B) => B): B = l match {
+    case Nil => z
     case Cons(h, t) => f(h, foldRight(t, z)(f))
   }
-  def sum2(l: Listt[Int]): Int = foldRight(l, 0)(_ + _)
-  def product2(l: Listt[Double]): Double = foldRight(l, 1.0)(_ * _)
+
+  def sum2(l: List[Int]): Int = foldRight(l, 0)(_ + _)
+
+  def product2(l: List[Double]): Double = foldRight(l, 1.0)(_ * _)
 
   /**
     * EXERCISE 3.7
@@ -234,7 +238,7 @@ object Listt {
     * See what happens when you pass Nil and Cons themselves to foldRight, like this:
     *
     * ```
-    * foldRight(Listt(1,2,3), Nill:Listt[Int])(Cons(_,_))
+    * foldRight(List(1,2,3), Nil:List[Int])(Cons(_,_))
     * ```
     *
     * What do you think this says about the relationship between foldRight and
@@ -242,7 +246,7 @@ object Listt {
     *
     * ANSWER
     *
-    * We get back the input list. Even more, if we replace `Nill` with another list, we was implement `concat` function
+    * We get back the input list. Even more, if we replace `Nil` with another list, we was implement `concat` function
     */
 
 
@@ -251,7 +255,7 @@ object Listt {
     *
     * Compute the length of a list using foldRight.
     */
-  def length[A](l: Listt[A]): Int = foldRight(l, 0)((_, length) => length + 1)
+  def length[A](l: List[A]): Int = foldRight(l, 0)((_, length) => length + 1)
 
   /**
     * EXERCISE 3.10
@@ -262,8 +266,8 @@ object Listt {
     * chapter. Here is its signature
     */
   @annotation.tailrec
-  def foldLeft[A,B](l: Listt[A], z: B)(f: (B, A) => B): B = l match {
-    case Nill => z
+  def foldLeft[A, B](l: List[A], z: B)(f: (B, A) => B): B = l match {
+    case Nil => z
     case Cons(h, t) => foldLeft(t, f(z, h))(f)
   }
 
@@ -272,9 +276,11 @@ object Listt {
     *
     * Write sum, product, and a function to compute the length of a list using foldLeft.
     */
-  def sum3(l: Listt[Int]): Int = foldLeft(l, 0)(_ + _)
-  def product3(l: Listt[Double]): Double = foldLeft(l, 0.0)(_ * _)
-  def length2(l: Listt[Int]): Int = foldLeft(l, 0)((x, _) => x + 1)
+  def sum3(l: List[Int]): Int = foldLeft(l, 0)(_ + _)
+
+  def product3(l: List[Double]): Double = foldLeft(l, 0.0)(_ * _)
+
+  def length2(l: List[Int]): Int = foldLeft(l, 0)((x, _) => x + 1)
 
 
   /**
@@ -283,7 +289,7 @@ object Listt {
     * Write a function that returns the reverse of a list (given List(1,2,3) it returns List(3,2,1)). See if you
     * can write it using a fold.
     */
-  def reverse[A](l: Listt[A]): Listt[A] = foldLeft(l, Nill: Listt[A])((as, x) => Cons(x, as))
+  def reverse[A](l: List[A]): List[A] = foldLeft(l, Nil: List[A])((as, x) => Cons(x, as))
 
   /**
     * EXERCISE 3.13
@@ -292,14 +298,14 @@ object Listt {
     * via foldLeft is useful because it lets us implement foldRight tail-recursively, which means it works even
     * for large lists without overflow- ing the stack.
     */
-  def foldRightViaFoldLeft[A, Z](l: Listt[A], z: Z)(f: (A, Z) => Z): Z = foldLeft(reverse(l), z)((z, a) => f(a, z))
+  def foldRightViaFoldLeft[A, Z](l: List[A], z: Z)(f: (A, Z) => Z): Z = foldLeft(reverse(l), z)((z, a) => f(a, z))
 
   /**
     * EXERCISE 3.14
     *
     * Implement append in terms of either `foldLeft` or `foldRight`.
     */
-  def appendViaFoldRight[A](l: Listt[A], r: Listt[A]): Listt[A] = {
+  def appendViaFoldRight[A](l: List[A], r: List[A]): List[A] = {
     foldRightViaFoldLeft(l, r)(Cons(_, _))
   }
 
@@ -309,8 +315,8 @@ object Listt {
     * Hard: Write a function that concatenates a list of lists into a single list. Its runtime should be linear
     * in the total length of all lists. Try to use functions we have already defined.
     */
-  def concat[A](l: Listt[Listt[A]]): Listt[A] = {
-    foldRightViaFoldLeft(l, Nill: Listt[A])(append)
+  def concat[A](l: List[List[A]]): List[A] = {
+    foldRightViaFoldLeft(l, Nil: List[A])(append)
   }
 
   /**
@@ -319,7 +325,7 @@ object Listt {
     * Write a function that transforms a list of integers by adding 1 to each element. (Reminder: this should be
     * a pure function that returns a new List!)
     */
-  def add1(l: Listt[Int]): Listt[Int] = foldRight(l, Nill: Listt[Int])((i, t) => Cons(i + 1, t))
+  def add1(l: List[Int]): List[Int] = foldRight(l, Nil: List[Int])((i, t) => Cons(i + 1, t))
 
   /**
     * EXERCISE 3.17
@@ -327,7 +333,7 @@ object Listt {
     * Write a function that turns each value in a List[Double] into a String. You can use the expression d.toString
     * to convert some d: Double to a String.
     */
-  def mapToString(l: Listt[Double]): Listt[String] = foldRight(l, Nill: Listt[String])((d, t) => Cons(d.toString, t))
+  def mapToString(l: List[Double]): List[String] = foldRight(l, Nil: List[String])((d, t) => Cons(d.toString, t))
 
   /**
     * EXERCISE 3.18
@@ -335,9 +341,11 @@ object Listt {
     * Write a function map that generalizes modifying each element in a list while maintain- ing the structure of
     * the list. Here is its signature:12
     */
-  def map[A, B](l: Listt[A])(f: A => B): Listt[B] = foldRight(l, Nill: Listt[B])((a, t) => Cons(f(a), t))
-  def map_2[A, B](l: Listt[A])(f: A => B): Listt[B] = foldRightViaFoldLeft(l, Nill: Listt[B])((a, t) => Cons(f(a), t))
-  def map_3[A, B](l: Listt[A])(f: A=> B): Listt[B] = Nill
+  def map[A, B](l: List[A])(f: A => B): List[B] = foldRight(l, Nil: List[B])((a, t) => Cons(f(a), t))
+
+  def map_2[A, B](l: List[A])(f: A => B): List[B] = foldRightViaFoldLeft(l, Nil: List[B])((a, t) => Cons(f(a), t))
+
+  def map_3[A, B](l: List[A])(f: A => B): List[B] = Nil
 
   /**
     * EXERCISE 3.20
@@ -347,30 +355,33 @@ object Listt {
     *
     * For instance, flatMap(List(1,2,3))(i => List(i,i)) should result in List(1,1,2,2,3,3).
     */
-  def flatMap[A, B](l: Listt[A])(f: A => Listt[B]): Listt[B] = concat(map(l)(f))
+  def flatMap[A, B](l: List[A])(f: A => List[B]): List[B] = concat(map(l)(f))
 
   /**
     * EXERCISE 3.21
     *
     * Use `flatMap` to implement `filter`
     */
-  def filter[A](l: Listt[A])(f: A => Boolean): Listt[A] = flatMap(l)(a => if (f(a)) Listt(a) else Nill)
+  def filter[A](l: List[A])(f: A => Boolean): List[A] = flatMap(l)(a => if (f(a)) List(a) else Nil)
 
   /**
     * other implementation of `filter`
     */
-  def filter_2[A](l: Listt[A])(f: A => Boolean): Listt[A] =
-    foldRight(l, Nill: Listt[A])((a, b) => if (f(a)) Cons(a, b) else b)
-  def filter_3[A](l: Listt[A])(f: A => Boolean): Listt[A] = {
+  def filter_2[A](l: List[A])(f: A => Boolean): List[A] =
+    foldRight(l, Nil: List[A])((a, b) => if (f(a)) Cons(a, b) else b)
+
+  def filter_3[A](l: List[A])(f: A => Boolean): List[A] = {
     import scala.collection.mutable.ListBuffer
     val buf = new ListBuffer[A]
+
     @annotation.tailrec
-    def go(l: Listt[A]): Unit = l match {
-      case Nill => Unit
+    def go(l: List[A]): Unit = l match {
+      case Nil => Unit
       case Cons(h, t) => if (f(h)) buf += h; go(t)
     }
+
     go(l)
-    Listt(buf.toList: _*)
+    List(buf.toList: _*)
   }
 
   /**
@@ -379,9 +390,9 @@ object Listt {
     * Write a function that accepts two lists and constructs a new list by adding corresponding elements. For
     * example, List(1,2,3) and List(4,5,6) become List(5,7,9).
     */
-  def addPair(l1: Listt[Int], l2: Listt[Int]): Listt[Int] = (l1, l2) match {
-    case (Nill, _) => Nill
-    case (_, Nill) => Nill
+  def addPair(l1: List[Int], l2: List[Int]): List[Int] = (l1, l2) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
     case (Cons(h1, t1), Cons(h2, t2)) => Cons(h1 + h2, addPair(t1, t2))
   }
 
@@ -391,65 +402,69 @@ object Listt {
     * Generalize the function you just wrote so that it’s not specific to integers or addition. Name your
     * generalized function zipWith.
     */
-  def zipWith[A, B](l1: Listt[A], l2: Listt[A])(f: (A, A) => B): Listt[B] = (l1, l2) match {
-    case (Nill, _) => Nill
-    case (_, Nill) => Nill
+  def zipWith[A, B](l1: List[A], l2: List[A])(f: (A, A) => B): List[B] = (l1, l2) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
     case (Cons(h1, t1), Cons(h2, t2)) => Cons(f(h1, h2), zipWith(t1, t2)(f))
   }
 
   /**
     * some function take from scala's List library
     */
-  def take[A](l: Listt[A], n: Int): Listt[A] = {
-    if (n <= 0) Nill
+  def take[A](l: List[A], n: Int): List[A] = {
+    if (n <= 0) Nil
     else l match {
-      case Nill => Nill
+      case Nil => Nil
       case Cons(h, t) => Cons(h, take(t, n - 1))
     }
   }
 
-  def takeViaListBuf[A](l: Listt[A], n: Int): Listt[A] = {
-    if (n <= 0) Nill
+  def takeViaListBuf[A](l: List[A], n: Int): List[A] = {
+    if (n <= 0) Nil
 
     import scala.collection.mutable.ListBuffer
     val buf = new ListBuffer[A]
+
     @annotation.tailrec
-    def go(l: Listt[A], n: Int): Unit = l match {
-      case Nill => Nill
+    def go(l: List[A], n: Int): Unit = l match {
+      case Nil => Nil
       case Cons(h, t) => buf += h; go(t, n - 1)
     }
+
     go(l, n)
 
-    Listt(buf.toList: _*)
+    List(buf.toList: _*)
   }
 
-  def takeWhile[A](l: Listt[A])(f: A => Boolean): Listt[A] = l match {
-    case Nill => Nill
-    case Cons(h, t) => if (f(h)) Cons(h, takeWhile(t)(f)) else Nill
+  def takeWhile[A](l: List[A])(f: A => Boolean): List[A] = l match {
+    case Nil => Nil
+    case Cons(h, t) => if (f(h)) Cons(h, takeWhile(t)(f)) else Nil
   }
 
-  def takeWhileViaListBuf[A](l: Listt[A])(f: A => Boolean): Listt[A] = {
+  def takeWhileViaListBuf[A](l: List[A])(f: A => Boolean): List[A] = {
     import scala.collection.mutable.ListBuffer
     val buf = new ListBuffer[A]
+
     @annotation.tailrec
-    def go(l: Listt[A])(f: A => Boolean): Unit = l match {
-      case Nill => ()
+    def go(l: List[A])(f: A => Boolean): Unit = l match {
+      case Nil => ()
       case Cons(h, t) => if (f(h)) buf += h; go(t)(f)
     }
+
     go(l)(f)
 
-    Listt(buf.toList: _*)
+    List(buf.toList: _*)
   }
 
   @annotation.tailrec
-  def forall[A](l: Listt[A])(f: A => Boolean): Boolean = l match {
-    case Nill => f(Nill)
+  def forall[A](l: List[A])(f: A => Boolean): Boolean = l match {
+    case Nil => f(Nil)
     case Cons(h, t) => f(h) && forall(t)(f)
   }
 
   @annotation.tailrec
-  def exists[A](l: Listt[A])(f: A => Boolean): Boolean = l match {
-    case Nill => f(Nill)
+  def exists[A](l: List[A])(f: A => Boolean): Boolean = l match {
+    case Nil => f(Nil)
     case Cons(h, t) => if (f(h)) true else exists(t)(f)
   }
 
@@ -463,27 +478,29 @@ object Listt {
     * implementation in chapter 5 and hopefully improve on it. Note: Any two values x and y can be compared for
     * equality in Scala using the expression x == y.
     */
-  def startWith[A](l: Listt[A], s: Listt[A]): Boolean = (l, s) match {
-    case (_, Nill) => l == Nill
+  def startWith[A](l: List[A], s: List[A]): Boolean = (l, s) match {
+    case (_, Nil) => l == Nil
     case (Cons(h1, t1), Cons(h2, t2)) => h1 == h2 & startWith(t1, t2)
     case _ => false
   }
 
-  def startWithViaBuf[A](l: Listt[A], s: Listt[A]): Boolean = {
+  def startWithViaBuf[A](l: List[A], s: List[A]): Boolean = {
     var buf = true
+
     @annotation.tailrec
-    def go(l: Listt[A], s: Listt[A]): Unit = (l, s) match {
-      case (_, Nill) => buf = l == Nill
+    def go(l: List[A], s: List[A]): Unit = (l, s) match {
+      case (_, Nil) => buf = l == Nil
       case (Cons(h1, t1), Cons(h2, t2)) => buf &= h1 == h2; go(t1, t2)
       case _ => buf = false
     }
+
     go(l, s)
     buf
   }
 
   @annotation.tailrec
-  def hasSubsequence[A](l: Listt[A], s: Listt[A]): Boolean = s match {
-    case Nill => l == Nill
+  def hasSubsequence[A](l: List[A], s: List[A]): Boolean = s match {
+    case Nil => l == Nil
     case _ if startWith(l, s) => true
     case Cons(h, t) => hasSubsequence(t, s)
   }
@@ -497,11 +514,11 @@ object Listt {
   * ANSWER
   * 3
   */
-val x = Listt(1, 2, 3, 4, 5) match {
+val x = List(1, 2, 3, 4, 5) match {
   case Cons(h, Cons(2, Cons(4, _))) => h
-  case Nill => 42
+  case Nil => 42
   case Cons(h, Cons(y, Cons(3, Cons(4, _)))) => h + y
-  case Cons(h, t) => h + Listt.sum(t)
+  case Cons(h, t) => h + List.sum(t)
   case _ => 101
 }
 
