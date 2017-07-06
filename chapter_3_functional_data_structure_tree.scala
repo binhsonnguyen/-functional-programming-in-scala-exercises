@@ -54,12 +54,97 @@ case class Leaf[A](value: A) extends Tree[A]
 
 case class Branch[A](left: Tree[A], right: Tree[A]) extends Tree[A]
 
-/**
-  * EXERCISE 3.25
-  *
-  * Write a function `size` that counts the number of nodes (leaves and branches) in a tree.
-  */
-def size[A](t: Tree[A]): Int = t match {
-  case Leaf(_) => 1
-  case Branch(l, r) => size(l) + size(r) + 1
+object Tree {
+
+  /**
+    * EXERCISE 3.25
+    *
+    * Write a function `size` that counts the number of nodes (leaves and branches) in a tree.
+    */
+  def size[A](t: Tree[A]): Int = t match {
+    case Leaf(_) => 1
+    case Branch(l, r) => size(l) + size(r) + 1
+  }
+
+  /**
+    * EXERCISE 3.26
+    *
+    * Write a function maximum that returns the maximum element in a `Tree[Int]`. (Note: In Scala, you can use
+    * `x.max(y)` or `x max y` to compute the maximum of two integers `x` and `y`.)
+    */
+  def maximum(t: Tree[Int]): Int = t match {
+    case Leaf(a) => a
+    case Branch(l, r) => maximum(l) max maximum(r)
+  }
+
+  /**
+    * EXERCISE 3.27
+    *
+    * Write a function depth that returns the maximum path length from the root of a tree to any leaf.
+    */
+  def depth[A](t: Tree[A]) = t match {
+    case Leaf(_) => 1
+    case Branch(l, r) => 1 + (depth(l) max depth(r))
+  }
+
+  /**
+    * EXERCISE 3.28
+    *
+    * Write a function `map`, analogous to the method of the same name on List, that modi- fies each element in
+    * a tree with a given function.
+    */
+  def map[A, B](t: Tree[A])(f: A => B): Tree[B] = t match {
+    case Leaf(_) => Leaf(f(_))
+    case Branch(l, r) => Branch(map(l)(f), map(r)(f))
+  }
+
+  /**
+    * ADTs and encapsulation
+    *
+    * One might object that algebraic data types violate encapsulation by making public the internal
+    * representation of a type. In FP, we approach concerns about encapsulation differently—we don’t typically
+    * have delicate mutable state which could lead to bugs or violation of invariants if exposed publicly.
+    * Exposing the data constructors of a type is often fine, and the decision to do so is approached much like
+    * any other decision about what the public API of a data type should be.15
+    *
+    * We do typically use ADTs for situations where the set of cases is closed (known to be fixed). For `List` and
+    * `Tree`, changing the set of data constructors would significantly change what these data types are. `List`
+    * is a singly linked list—that is its nature— and the two cases Nil and Cons form part of its useful public API.
+    * We can certainly write code that deals with a more abstract API than List (we’ll see examples of this later
+    * in the book), but this sort of information hiding can be handled as a separate layer rather than being baked
+    * into List directly.
+    *
+    * Ai đó có thể thấy khó chịu rằng kiểu dữ liệu đại số vi phạm tính đóng gói bởi nó công bố những mô tả
+    * bên trong của kiểu dữ liệu. Thật ra, trong lập trình hàm, chúng ta tiếp cận những vấn đề liên quan đến tính
+    * đóng gói theo một cách khác - ta không gặp sự khó chịu trước sự tồn tại của những trạng thái thay đổi được
+    * của object - cái mà dẫn đến lỗi hoặc làm xâm hại những phần tử không phải biến (nếu chúng được công khai ra
+    * ngoài). Công khai hàm tạo của một kiểu thường ổn, và quyết định như vậy được tiếp cận giống như khi quyết
+    * định công khai bất cứ API nào khác của kiểu dữ liệu.
+    *
+    * Chúng ta thường sử dụng kiểu đại số cho những tình huống mà tập hợp các `case` là đóng (đã biết trước
+    * là cố định). Cho `List` và `Tree`, thay đổi tập các hàm tạo có thể làm thay đổi thấy rõ bản thân những
+    * kiểu đó. `List` bản thân nó là một danh sách liên kết đơn, và hai `case` `Nil` và `Cons` là một phần của
+    * API công khai của nó. Chúng ta hiển nhiên có thể viết ra mã có tính trừu tượng hơn cả `List` (theo dõi
+    * trong chương sau) (để giải quyết chuyện đóng gói), nhưng việc ẩn thông tin này nên được xử lý như một
+    * lớp riêng biệt thay vì phệt luôn vào `List`.
+    */
+
+  /**
+    * EXERCISE 3.29
+    *
+    * Generalize size, maximum, depth, and map, writing a new function fold that abstracts over their similarities.
+    * Reimplement them in terms of this more general function. Can you draw an analogy between this fold function
+    * and the left and right folds for List?
+    */
+  def fold[A, B](t: Tree[A])(f: A => B)(g: (B, B) => B) = t match {
+    case Leaf(_) => f(_)
+    case Branch(l, r) => g(fold(l)(f)(g), fold(r)(f)(g))
+  }
+
+  def sizeViaFold[A](t: Tree[A]) = fold(t)(_ => 1)((l, r) => 1 + l + r)
+
+  def maximumViaFold(t: Tree[Int]) = fold(t)(_)((l, r) => l max r)
+
+  def depthViaFold[A](t: Tree[A]) = fold(t)(_ => 0)((l, r) => 1 + (l max r))
+
 }
