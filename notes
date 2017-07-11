@@ -80,3 +80,21 @@ nhau với nhiều nhận dạng (bộ tham số, chẳng hạn) khác nhau. Và
 
 Một ví dụ dễ thấy của overloading là, hàm sum, ngoài tính tổng số nguyên, nó có thể nhận đối số là số thực, chuỗi, 
 mảng, danh sách v.v... Tất cả có cách triển khai hoàn toàn khác nhau, mỗi tội có cùng tên mà thôi. 
+
+Hiệp biến, phản biến và bất biến
+---------------------------------
+
+https://stackoverflow.com/questions/8481301/covariance-invariance-and-contravariance-explained-in-plain-english
+
+Cốt lõi, 3 khái niệm đó là để mô tả sự bị ảnh hưởng của kiểu con thông qua việc chuyển đổi kiểu. Tiếng việt nghĩa 
+là, nếu ta có `B >: A`, và `f` là hàm chuyển đổi giữa 2 kiểu đó, thì `f` là
+
+- case f(B) >: f(A) => hiệp biến
+- case f(A) >: f(B) => phản biến
+- case _ => bất biến
+
+Một ví dụ bằng Java. Nếu `f` là `A => List[A]`, thử qua A là Object và String. Ta có List[String] và List[Object] là 
+không có mối liên hệ nào. Nên `f` là invariant, nghĩa là, List là invariant.
+
+Đổi lại, nếu là `A => A[]`, ta có `Object >: String` và `Object[] >: String[]`, nên `f` là covariant, hay, Array là 
+covariant.
