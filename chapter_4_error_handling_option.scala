@@ -97,12 +97,12 @@ def Try[A](f: => A): Maybe[A] = {
     case _: Exception => None
   }
 }
-def insuranceRateQuote(age: String, numberOfSpeedingTickets: String): Maybe[Double] = {
+def insuranceRateQuote2(age: String, numberOfSpeedingTickets: String): Maybe[Double] = {
   val maybeAge = Try(age.toInt)
   val maybeTicket = Try(numberOfSpeedingTickets.toInt)
-  insuranceRateQuote(maybeAge, maybeTicket)
+  insuranceRateQuote2(maybeAge, maybeTicket)
 }
-def insuranceRateQuote(age: Maybe[Int], numberOfSpeedingTickets: Maybe[Int]): Maybe[Double]
+def insuranceRateQuote2(age: Maybe[Int], numberOfSpeedingTickets: Maybe[Int]): Maybe[Double]
 
 /**
   * Như đã thấy, ta đã phải viết thêm một hàm `insuranceRateQuote` mới để xử lý trên 2 `Maybe`.
@@ -116,3 +116,36 @@ def insuranceRateQuote(age: Maybe[Int], numberOfSpeedingTickets: Maybe[Int]): Ma
   */
 def map2[A, B, C](ma: Maybe[A], mb: Maybe[B])(f: (A, B) => C): Maybe[C] =
   ma flatMap (a => mb map (b => f(a, b)))
+
+/**
+  * Giờ thì tính rate đã đơn giản hơn
+  */
+def insuranceRateQuote3(age: String, numberOfSpeedingTickets: String): Maybe[Double] = {
+  val maybeAge = Try(age.toInt)
+  val maybeTicket = Try(numberOfSpeedingTickets.toInt)
+  map2(maybeAge, maybeTicket)(insuranceRateQuote)
+}
+
+/**
+  * `map2` giúp ta không cần phải sửa bất kỳ hàm nào đang sử dụng 2 đầu vào để làm chúng tương
+  * thích với `Maybe` nữa.
+  *
+  * Có khi nào ta nghĩ đến `map3`, `map4`, `mapx` ?
+  *
+  * EXERCISE 4.4
+  *
+  * Write a function sequence that combines a list of Options into one Option containing a list of
+  * all the Some values in the original list. If the original list contains None even once, the result
+  * of the function should be None; otherwise the result should be Some with a list of all the values.
+  *
+  * Viết một hàm `sequence` gộp một danh sách các `Maybe` thành một `Maybe` chứa một danh sách
+  * của tất cả các giá trị của các `Some` trong danh sách cũ. Nếu danh sách cũ chứa thậm chí một `None`,
+  * kết quả sẽ là `None`
+  */
+def sequence[A](lma: List[Maybe[A]]): Maybe[List[A]] = lma match {
+  case Nil => Some(Nil)
+  case h :: t => h flatMap(ha => sequence(t) map(ha :: _))
+}
+
+def sequenceViaMaping[A](lma: List[Maybe[A]]): Maybe[List[A]] =
+  lma.foldRight(Some(Nil): Maybe[List[A]])(map2(_, _)(_ :: _))
