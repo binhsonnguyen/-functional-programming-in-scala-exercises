@@ -144,8 +144,49 @@ def insuranceRateQuote3(age: String, numberOfSpeedingTickets: String): Maybe[Dou
   */
 def sequence[A](lma: List[Maybe[A]]): Maybe[List[A]] = lma match {
   case Nil => Some(Nil)
-  case h :: t => h flatMap(ha => sequence(t) map(ha :: _))
+  case h :: t => h flatMap (ha => sequence(t) map (ha :: _))
 }
 
 def sequenceViaMaping[A](lma: List[Maybe[A]]): Maybe[List[A]] =
   lma.foldRight(Some(Nil): Maybe[List[A]])(map2(_, _)(_ :: _))
+
+/**
+  * Đặt tình huống ta có thể sử dụng `sequence` để làm những việc như dưới đây
+  */
+def parseInts(ls: List[String]): Maybe[List[Int]] =
+  sequence(ls map (s => Try(s.toInt)))
+
+/**
+  * Trông thì có vẻ ngon, nhưng thật ra ta vừa duyệt qua một list 2 lần. Những trường hợp như thế
+  * rất nhiều, cho nên sẽ có hàm `traverse` như dưới đây
+  *
+  * EXERCISE 4.5
+  */
+def traverse[A, B](l: List[A])(f: A => Maybe[B]): Maybe[List[B]] =
+  l.foldRight[Maybe[List[B]]](Some(Nil))((a, mlb) => map2(f(a), mlb)(_::_))
+
+// and we even can implement sequence via traverse
+def sequenceViaTraverse[A](lma: List[Maybe[A]]): Maybe[List[A]] =
+  traverse(lma)(ma => ma)
+
+/**
+  * Bởi vì việc `lift` quá phổ biến, Scala đã được bổ sung một cú pháp gọi là comprehension với
+  * mục đích mở rộng flatMap cũng như map. Sau đây là map2 được biểu diễn bởi comprehension
+  *
+  */
+def map2Original[A, B, C](ma: Maybe[A], mb: Maybe[B])(f: (A, B) => C): Maybe[C] =
+  ma flatMap(a => mb map (b => f(a, b)))
+
+/**
+  * mỗi binding sẽ được desurgar thành một lời gọi flatMap, riêng binding cuối cùng và biểu thức
+  * sau yield sẽ được chuyển thành map. Bạn có thể thấy nếu map3, map4... thì sử dụng cú pháp
+  * comprehension sẽ gọn gàng hơn nhiều.
+  *
+  * Với map, lift, sequence, traverce, comprehension, bạn đã có thể không cần sửa bất cứ hàm
+  * nào để sử dụng chúng với Maybe nữa.
+  */
+def map2ViaComprehension[A, B, C](ma: Maybe[A], mb: Maybe[B])(f: (A, B) => C): Maybe[C] =
+  for {
+    a <- ma
+    b <- mb
+  } yield f(a, b)
