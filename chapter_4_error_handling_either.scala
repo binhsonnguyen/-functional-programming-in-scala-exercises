@@ -38,6 +38,15 @@ sealed trait Either[+E, +A] {
     case Left(_) => v
     case _ => this
   }
+
+  def map2[EE >: E, B, C](eb: Either[EE, B])(f: (A, B) => C): Either[EE, C] =
+    this flatMap (a => eb map (f(a, _)))
+
+  def map2ViaForComprehension[EE >: E, B, C](eb: Either[EE, B])(f: (A, B) => C): Either[EE, C] =
+    for {
+      a <- this
+      b <- eb
+    } yield f(a, b)
 }
 
 case class Left[+E](value: E) extends Either[E, Nothing]
@@ -79,5 +88,19 @@ def Try[A](f: => A): Either[Exception, A] =
   catch {
     case e: Exception => Left(e)
   }
+
+/*
+ * EXCERCISE 4.7
+ * Triển khai `sequence` và `traverse`. Kết quả của chúng sẽ có lỗi đầu tiên gặp được
+ * nếu có.
+ */
+def sequence[E, A](es: List[Either[E, A]]): Either[E, List[A]] =
+  es.foldRight[Either[E, List[A]]](Right(Nil))((ea, eas) => (ea map2 eas) (_ :: _))
+
+def traverse[E, A, B](as: List[A])(f: A => Either[E, B]): Either[E, List[B]] =
+  as.foldRight[Either[E, List[B]]](Right(Nil))((a, ebs) => f(a).map2(ebs)(_ :: _))
+
+def sequenceViaTraverse[E, A](es: List[Either[E, A]]): Either[E, List[A]] =
+  traverse(es)(e => e)
 
 def main(args: Array[String]): Unit = ()
