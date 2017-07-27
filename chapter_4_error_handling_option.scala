@@ -19,6 +19,9 @@ sealed trait Maybe[+A] {
 
   def flatMapViaMaybe[B](f: A => Maybe[B]): Maybe[B] = map(f).getOrElse(None)
 
+  /*
+   * cú pháp `>:` cho biết rằng `B` là siêu kiểu của `A`
+   */
   def orElse[B >: A](ob: => B): Maybe[B] = this match {
     case None => Some(ob)
     case _ => this
@@ -89,7 +92,6 @@ def insuranceRateQuote(age: Int, numberOfSpeedingTickets: Int): Double
   * là một hàm trả về một `Maybe`. Và việc Maybe đó None hay không phụ thuộc vào `toInt` có thành công
   * hay không - cũng là một `Maybe`. Ta cần chuyển toInt thành một hàm returnmaybealbe và áp dụng nó
   * vào hàm tính rate. Như sau:
-  *
   */
 def Try[A](f: => A): Maybe[A] = {
   try Some(f)
@@ -163,7 +165,7 @@ def parseInts(ls: List[String]): Maybe[List[Int]] =
   * EXERCISE 4.5
   */
 def traverse[A, B](l: List[A])(f: A => Maybe[B]): Maybe[List[B]] =
-  l.foldRight[Maybe[List[B]]](Some(Nil))((a, mlb) => map2(f(a), mlb)(_::_))
+  l.foldRight[Maybe[List[B]]](Some(Nil))((a, mlb) => map2(f(a), mlb)(_ :: _))
 
 // and we even can implement sequence via traverse
 def sequenceViaTraverse[A](lma: List[Maybe[A]]): Maybe[List[A]] =
@@ -175,7 +177,7 @@ def sequenceViaTraverse[A](lma: List[Maybe[A]]): Maybe[List[A]] =
   *
   */
 def map2Original[A, B, C](ma: Maybe[A], mb: Maybe[B])(f: (A, B) => C): Maybe[C] =
-  ma flatMap(a => mb map (b => f(a, b)))
+  ma flatMap (a => mb map (b => f(a, b)))
 
 /**
   * mỗi binding sẽ được desurgar thành một lời gọi flatMap, riêng binding cuối cùng và biểu thức
