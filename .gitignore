@@ -5,3 +5,5 @@
 
 ### Intellij
 .idea
+project/
+target/
