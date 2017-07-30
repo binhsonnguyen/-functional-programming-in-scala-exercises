@@ -103,4 +103,36 @@ def traverse[E, A, B](as: List[A])(f: A => Either[E, B]): Either[E, List[B]] =
 def sequenceViaTraverse[E, A](es: List[Either[E, A]]): Either[E, List[A]] =
   traverse(es)(e => e)
 
-def main(args: Array[String]): Unit = ()
+/*
+ * Demo
+ */
+case class Person(name: Name, age: Age)
+
+sealed class Name(val value: String)
+
+sealed class Age(val value: Int)
+
+def makeName(name: String): Either[String, Name] =
+  if (name == null || name.isEmpty) Left("empty name!")
+  else Right(new Name(name))
+
+def makeAge(age: Int): Either[String, Age] =
+  if (age < 0) Left("age out of range!")
+  else Right(new Age(age))
+
+def makePerson(name: String, age: Int): Either[String, Person] =
+  makeName(name).map2(makeAge(age))(Person)
+
+/*
+ * EXERCISE 4.8
+ *
+ * Trong demo trên, `map2` chỉ có khả năng báo cáo một lỗi, kể cả khi cả name lẫn age đều invalid.
+ * Chúng ta cần gì để có thể báo cáo được cả hai lỗi? Sửa map2 hay sửa nguyên mẫu của makePerson?
+ * Hay là phải tạo ra một kiểu dữ liệu mới để phục vụ yêu cầu đó tốt hơn so với Either? Những
+ * orElse, traverse, sequence đối xử như thế nào với kiểu dữ liệu đó?
+ */
+sealed trait Partial[+A, +B]
+
+case class Errors[+A](get: Seq[A]) extends Partial[A, Nothing]
+
+case class Success[B](get: B) extends Partial[Nothing, B]
