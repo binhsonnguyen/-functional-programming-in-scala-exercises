@@ -130,9 +130,32 @@ def makePerson(name: String, age: Int): Either[String, Person] =
  * Chúng ta cần gì để có thể báo cáo được cả hai lỗi? Sửa map2 hay sửa nguyên mẫu của makePerson?
  * Hay là phải tạo ra một kiểu dữ liệu mới để phục vụ yêu cầu đó tốt hơn so với Either? Những
  * orElse, traverse, sequence đối xử như thế nào với kiểu dữ liệu đó?
+ *
+ * ANS: có thể dùng Either[List[E], A], hoặc dùng một kiểu mới, như dưới đây
  */
 sealed trait Partial[+A, +B]
 
 case class Errors[+A](get: Seq[A]) extends Partial[A, Nothing]
 
 case class Success[B](get: B) extends Partial[Nothing, B]
+
+/*
+ * Note:
+ *
+ * Suốt chương này chúng ta đã phân tích những vấn đề của `Exception` và làm quen với những nguyên
+ * tắc xử lý lỗi của lập trình thuần hàm. Mặc dù chúng ta đã tập trung vào những kiểu đại số là
+ * `Maybe` và `Either`, nhưng phải nhớ rằng ý tưởng lớn hơn ở đây đó là chúng ta có thể biểu diễn
+ * lại lỗi như là các giá trị thông thường và sử dụng HOF để đóng gói những mẫu thiết kế phổ biến
+ * của xử lý lỗi. Ý tưởng chung nhất này, về việc biểu diễn lại hiệu ứng phụ như những giá trị,
+ * là cái gì đó mà chúng ta sẽ gặp đi gặp lại suốt cuốn sách.
+ *
+ * Chúng tôi không đặt kỳ vọng bạn sẽ lưu loát mọi HOF mà chúng tôi viết, nhưng ít nhất bây giờ
+ * bạn đã phải thấy quen thuộc với việc viết mã cho hàm của bạn với những xử lý lỗi được viết
+ * hoàn toàn bằng lập trình hàm. Với những công cụ đã được cung cấp, giờ đây Exception chỉ được
+ * dành riêng cho những lỗi thật sự không thể cứu được.
+ *
+ * Điều cuối cùng, là trong chương vừa rồi chúng ta đã chạm một ít vào khái niệm hàm
+ * non-strict: `orElse`, `getOrElse` and `Try`. Trong chương sau chúng ta sẽ tìm hiểu tại sao
+ * non-strict lại quan trọng, và tại sao chúng có thể cho chúng ta nhiều tính module và hiệu quả
+ * hơn trong chương trình của chúng ta.
+ */
