@@ -96,6 +96,7 @@ object List {
     * function takes time proportional only to the number of elements being dropped—we don’t need to make
     * a copy of the entire List.
     */
+  @annotation.tailrec
   def drop[A](l: List[A], n: Int): List[A] = {
     if (n <= 0) l
     else l match {
@@ -113,6 +114,7 @@ object List {
     * after the `=>` because the pattern wont match if the guard not `true`
     * As long as first time using case others (`case _`)
     */
+  @annotation.tailrec
   def dropWhile[A](l: List[A], f: A => Boolean): List[A] = l match {
     case Cons(h, t) if f(h) => dropWhile(t, f)
     case _ => l
@@ -138,6 +140,7 @@ object List {
     * Thật ra thì khả năng tự luận kiểu của Scala compiler có hạn chế nên mới phải curry hoá. Chứ các ngôn ngữ
     * như Haskell hay OCaml có khả năng tự luận hoàn chỉnh hơn nhiều, nên rất ít khi phải định kiểu.
     */
+  @annotation.tailrec
   def dropWhile2[A](as: List[A])(f: A => Boolean): List[A] = as match {
     case Cons(h, t) if f(h) => dropWhile2(t)(f)
     case _ => as
@@ -298,7 +301,8 @@ object List {
     * via foldLeft is useful because it lets us implement foldRight tail-recursively, which means it works even
     * for large lists without overflow- ing the stack.
     */
-  def foldRightViaFoldLeft[A, Z](l: List[A], z: Z)(f: (A, Z) => Z): Z = foldLeft(reverse(l), z)((z, a) => f(a, z))
+  def foldRightViaFoldLeft[A, Z](l: List[A], z: Z)(f: (A, Z) => Z): Z =
+    foldLeft(reverse(l), z)((z, a) => f(a, z))
 
   /**
     * EXERCISE 3.14
@@ -333,7 +337,8 @@ object List {
     * Write a function that turns each value in a List[Double] into a String. You can use the expression d.toString
     * to convert some d: Double to a String.
     */
-  def mapToString(l: List[Double]): List[String] = foldRight(l, Nil: List[String])((d, t) => Cons(d.toString, t))
+  def mapToString(l: List[Double]): List[String] =
+    foldRight(l, Nil: List[String])((d, t) => Cons(d.toString, t))
 
   /**
     * EXERCISE 3.18
@@ -341,9 +346,11 @@ object List {
     * Write a function map that generalizes modifying each element in a list while maintain- ing the structure of
     * the list. Here is its signature:12
     */
-  def map[A, B](l: List[A])(f: A => B): List[B] = foldRight(l, Nil: List[B])((a, t) => Cons(f(a), t))
+  def map[A, B](l: List[A])(f: A => B): List[B] =
+    foldRight(l, Nil: List[B])((a, t) => Cons(f(a), t))
 
-  def map_2[A, B](l: List[A])(f: A => B): List[B] = foldRightViaFoldLeft(l, Nil: List[B])((a, t) => Cons(f(a), t))
+  def map_2[A, B](l: List[A])(f: A => B): List[B] =
+    foldRightViaFoldLeft(l, Nil: List[B])((a, t) => Cons(f(a), t))
 
   def map_3[A, B](l: List[A])(f: A => B): List[B] = Nil
 

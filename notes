@@ -1,0 +1,100 @@
+Functional.log.m
+> Biểu thức `e` được gọi là tham chiếu minh bạch nếu với mọi chương trình `p`, mọi lời gọi `e` đều 
+có thể được thay thế bởi định lượng của e mà không hề làm thay đổi ý nghĩa của `p`. Hàm `f` được gọi 
+là thuần nếu biểu thức `f(x)` là tham chiếu minh bạch với mọi tham chiếu minh bạch `x`.
+
+> Tham chiếu minh bạch cho phép ta sử dụng phép `suy ra bằng` đối với chương trình. Còn gọi là phép 
+sử dụng `thay thế mẫu`.
+
+> FP giúp chương trình dễ đọc hơn, vì không cần quan tâm tới side effect.
+
+> FP giúp chương trình có tính modular hơn, khả năng tái sử dụng code cao hơn vì nhiều tính cô lập hơn.
+
+Tail Recursive
+
+Recursive thay thế cho vòng lặp. Lý thuyết để biến recursive tailless thành tailly là
+
+Ngoại trừ những params cần thiết cho bày toán, hàm recursive tailly sẽ có thêm một số lượng param, phụ 
+thuộc vào việc hàm tailless gọi bao nhiêu lần chính nó ở lúc return.
+
+Kiểu dữ liệu đại số
+--------------------
+
+*In computer programming, especially functional programming and type theory, an algebraic data type is a kind of composite type, i.e., a type formed by combining other types.*
+
+Trong lập trình máy tính, đặc biệt là trong lập trình hàm và lý thuyết kiểu, kiểu dữ liệu đại số là một loại kiểu kết hợp, tức là, kiểu dữ liệu được tạo thành bằng cách kết hợp các kiểu dữ liệu khác với nhau.
+
+*Two common classes of algebraic types are product types (i.e., tuples and records) and sum types, also called tagged or disjoint unions or variant types.[1]*
+
+Có hai nhóm lớn của kiểu dữ liệu đại số là kiểu tích (tuples, records) và kiểu tổng.
+
+*The values of a product type typically contain several values, called fields. All values of that type have the same combination of field types. The set of all possible values of a product type is the set-theoretic product, i.e., the Cartesian product, of the sets of all possible values of its field types.*
+
+Các giá trị của kiểu tích thường chứa một vài giá trị khác, được gọi là trường. Tất cả các giá trị của kiểu tích đều có cùng một cách kết hợp các trường với nhau. Tập hợp tất cả các giá trị khả dĩ của một kiểu tích là tích của các tập của tất cả các giá trị khả dĩ của kiểu của trường của nó.
+
+*The values of a sum type are typically grouped into several classes, called variants. A value of a variant type is usually created with a quasi-functional entity called a constructor. Each variant has its own constructor, which takes a specified number of arguments with specified types. The set of all possible values of a sum type is the set-theoretic sum, i.e., the disjoint union, of the sets of all possible values of its variants. Enumerated types are a special case of sum types in which the constructors take no arguments, as exactly one value is defined for each constructor.*
+
+Các giá trị của kiểu tổng thường được nhóm vào một vài biến thể. Giá trị của một biến thể thường được tạo ra bởi một thực thể trông giống hàm được gọi là hàm khởi tạo. Mỗi biến thể có hàm khởi tạo của nó, hàm này nhận một số lượng định trước các đối số có kiểu định trước. Tập tất cả các giá trị khả dĩ của kiểu tổng là tổng tập lý thuyết của các tập của tất cả các giá trị khả dĩ của biến thể của nó. Kiểu đếm được là một trường hợp đặc biệt của kiểu tổng vì hàm khởi tạo của nó không cần đối số, nghĩa là có một và chỉ một giá trị được tạo ra cho mỗi hàm khởi tạo.*
+
+Tree
+----
+
+*List is just one example of what’s called an algebraic data type (ADT). (Somewhat con- fusingly, ADT is sometimes used elsewhere to stand for abstract data type.) An ADT is just a data type defined by one or more data constructors, each of which may contain zero or more arguments. We say that the data type is the sum or union of its data construc- tors, and each data constructor is the product of its arguments, hence the name alge- braic data type.*
+
+
+
+Bên lề currying
+---------------
+
+Nhân một lúc đặt ra câu hỏi "ngoài câu chuyện của style và cách đọc, thì currying còn cái gì kool", tôi đi đến từ khoá
+"curring vs olverloading", chúng có liên quan đến nhau hay không, có cùng một purpose hay không. Sau đây là những gì tôi
+tổng hợp được.
+
+Chúng ta cần clear trước. Mặc dù bạn sẽ đọc / nghe được thấy currying trong tài liệu / nói chuyện về functional 
+programing - FP, và đọc / nghe được về overloading method trong ngữ cảnh của OOP. Nhưng, currying không đặc thù cho FP, 
+và overloading không phải là đặc thù cho OOP.
+
+CR, là cách triển khai hàm mà, thay vì cho nó có nhiều tham số, thì, ta xử lý từng đối số một, sau đó trả về một HÀM mà
+làm việc trên những đối số còn lại, và chạy hàm đó, cứ thế, cho đến khi chi còn một tham số thì thôi. Ví dụ, thay vì làm 
+một hàm để tính tổng hai tham số, ta truyền lần lượt từng tham số cho nó để nhận được kết quả là một HÀM mà cộng số đó 
+vào một thứ gì đó mà nó đã biết trước.
+
+def sum(x1: Int, x2: Int) => Int = x1 + x2
+
+thay vì thế, ta có plus:
+
+def plus(x: Int): (Int => Int) = (p) => x + p
+
+và thế là:
+
+def sum2(x1: Int, x2: Int, x3: Int) => Int = plus(x1)(x2)
+
+Và đấy chính là lý do mà currying thường xuất hiện trong tài liệu về FP - vì nó quá fit với ngôn ngữ. Thứ hai nữa, 
+là đa số các ngôn ngữ mệnh lệnh, thường thiếu khả năng truyền hàm đi như những tham số hay trả về hàm như những kết
+quả trả về, và vì thế nó không có lý do gì, không có nhu cầu, phải nhắc đến currying với những ngôn ngữ này, trớ trêu
+là, đó thường là những ngôn ngữ thường được nhắc tới cùng OOP.
+
+Overloading, nhắc tới một thứ hoàn toàn khác, nó là, làm quá tải một thứ gì đó có tên, bằng nhiều định nghĩa khác 
+nhau với nhiều nhận dạng (bộ tham số, chẳng hạn) khác nhau. Và bắt compiler tự giải quyết việc định nghĩa nào đang 
+được nhắc tới.
+
+Một ví dụ dễ thấy của overloading là, hàm sum, ngoài tính tổng số nguyên, nó có thể nhận đối số là số thực, chuỗi, 
+mảng, danh sách v.v... Tất cả có cách triển khai hoàn toàn khác nhau, mỗi tội có cùng tên mà thôi. 
+
+Hiệp biến, phản biến và bất biến
+---------------------------------
+
+https://stackoverflow.com/questions/8481301/covariance-invariance-and-contravariance-explained-in-plain-english
+
+Cốt lõi, 3 khái niệm đó là để mô tả sự bị ảnh hưởng của kiểu con thông qua việc chuyển đổi kiểu. Tiếng việt nghĩa 
+là, nếu ta có `B >: A`, và `f` là hàm chuyển đổi giữa 2 kiểu đó, thì `f` là
+
+- case f(B) >: f(A) => hiệp biến
+- case f(A) >: f(B) => phản biến
+- case _ => bất biến
+
+Một ví dụ bằng Java. Nếu `f` là `A => List[A]`, thử qua A là Object và String. Ta có List[String] và List[Object] là 
+không có mối liên hệ nào. Nên `f` là invariant, nghĩa là, List là invariant.
+
+Đổi lại, nếu là `A => A[]`, ta có `Object >: String` và `Object[] >: String[]`, nên `f` là covariant, hay, Array là 
+covariant.
