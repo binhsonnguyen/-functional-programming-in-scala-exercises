@@ -82,8 +82,28 @@
  *
  * Như vậy thì sử dụng lazy sẽ ngay lập tức phá huỷ tính strict của hàm (nếu có), ta còn nói rằng,
  * hàm non-strict lấy đối số của nó bằng tên thay vì bằng giá trị.
- *
- *
  */
 
+/*
+ * Lazy List/Stream
+ */
+sealed trait Stream[+A]
+case object Empty extends Stream[Nothing]
+case class Cons[A](h: () => A, t: () => Stream[A]) extends Stream[A]
 
+object Stream {
+  private def cons[A](h: => A, t: => Stream[A]): Stream[A] = {
+    lazy val head = h
+    lazy val tail = t
+    Cons(() => head, () => tail)
+  }
+
+  private def empty[A]: Stream[A] = Empty
+
+  def apply[A](as: A*): Stream[A] =
+    if (as.isEmpty) empty else cons(as.head, apply(as.tail: _*))
+
+}
+
+
+def main(args: Array[String]): Unit = {}
